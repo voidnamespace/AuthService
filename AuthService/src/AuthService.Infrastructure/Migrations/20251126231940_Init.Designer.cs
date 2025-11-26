@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AuthService.Infrastructure.Migrations
 {
     [DbContext(typeof(AuthDbContext))]
-    [Migration("20251126224925_RemoveEmailString")]
-    partial class RemoveEmailString
+    [Migration("20251126231940_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -23,8 +23,6 @@ public class AuthDbContext : DbContext
         {
             entity.HasKey(u => u.Id);
 
-            entity.Ignore(u => u.Email);
-
             entity.Property(u => u.Email)
                   .HasConversion(
                      email => email != null ? email._email : "",

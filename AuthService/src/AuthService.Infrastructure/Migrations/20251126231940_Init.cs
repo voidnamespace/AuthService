@@ -5,7 +5,7 @@
 namespace AuthService.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class RemoveEmailString : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
