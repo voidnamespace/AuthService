@@ -20,7 +20,7 @@ public class User
 
     public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 
-    private User() { }
+    private User() { } // clear private contructor for entity to let  EF core work  and aswell for VO objects
     public User(EmailVO email, PasswordVO password, Roles role = Roles.Customer)
     {
         Id = Guid.NewGuid();
