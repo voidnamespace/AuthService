@@ -1,15 +1,24 @@
 using AuthService.Application.Interfaces;
-using AuthService.Infrastructure.Services;
 using AuthService.Domain.Interfaces;
 using AuthService.Infrastructure.Data;
 using AuthService.Infrastructure.Repositories;
+using AuthService.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using StackExchange.Redis;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+{
+    var configuration = builder.Configuration.GetConnectionString("Redis")
+        ?? throw new InvalidOperationException("Redis connection string not found");
+    return ConnectionMultiplexer.Connect(configuration);
+});
+builder.Services.AddSingleton<RedisService>();
 
 
 builder.Services.AddDbContext<AuthDbContext>(options =>
