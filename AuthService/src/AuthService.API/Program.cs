@@ -1,8 +1,10 @@
+﻿using AuthService.Application.Common.Interfaces;
 using AuthService.Application.Interfaces;
-using AuthService.Infrastructure.Services;
 using AuthService.Domain.Interfaces;
 using AuthService.Infrastructure.Data;
+using AuthService.Infrastructure.Extensions;
 using AuthService.Infrastructure.Repositories;
+using AuthService.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -11,16 +13,25 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ------------------  Redis ------------------
+builder.Services.AddRedisService(
+    builder.Configuration.GetConnectionString("Redis")
+        ?? throw new InvalidOperationException("Redis connection string not found")
+);
 
+// ------------------ DbContext ------------------
 builder.Services.AddDbContext<AuthDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("AuthDb")));
 
+// ------------------ Repo ------------------
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
+// ------------------ Сервисы ------------------
 builder.Services.AddScoped<IAuthService, AuthService.Infrastructure.Services.AuthService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 
+// ------------------ JWT ------------------
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var secretKey = jwtSettings["SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey not found");
 
@@ -46,8 +57,8 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
+// ------------------ Controllers и Swagger ------------------
 builder.Services.AddControllers();
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -58,7 +69,6 @@ builder.Services.AddSwaggerGen(c =>
         Description = "API for user authentication and authorization using JWT"
     });
 
-    
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
@@ -84,6 +94,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// ------------------ CORS ------------------
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -96,8 +107,10 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// ------------------ Exception Middleware ------------------
 app.UseMiddleware<AuthService.Infrastructure.Middleware.ExceptionMiddleware>();
 
+// ------------------ Apply migrations and test Redis ------------------
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
@@ -110,23 +123,22 @@ using (var scope = app.Services.CreateScope())
     {
         app.Logger.LogError(ex, "An error occurred while applying migrations");
     }
+
 }
 
-
+// ------------------ Swagger ------------------
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "AuthService API V1");
-        c.RoutePrefix = string.Empty; 
+        c.RoutePrefix = string.Empty;
     });
 }
 
 app.UseHttpsRedirection();
-
 app.UseCors("AllowAll");
-
 
 app.UseAuthentication();
 app.UseAuthorization();
