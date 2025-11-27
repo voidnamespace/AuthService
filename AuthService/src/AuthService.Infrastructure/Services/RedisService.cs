@@ -11,7 +11,6 @@ public class RedisService : IRedisService
     private readonly JsonSerializerOptions _jsonOptions;
     private readonly ILogger<RedisService> _logger;
 
-    // Префикс для всех ключей — защита от коллизий
     private readonly string _prefix = "authservice:";
 
     public RedisService(IConnectionMultiplexer redis, ILogger<RedisService> logger)
@@ -87,4 +86,22 @@ public class RedisService : IRedisService
             throw;
         }
     }
+
+    // ---------------------- Test Redis ----------------------
+    public async Task TestRedisAsync()
+    {
+        var key = "test-key";
+        var valueToSet = "hello from AuthService";
+
+        await SetAsync(key, valueToSet, TimeSpan.FromMinutes(5));
+
+        var value = await GetAsync<string>(key);
+        Console.WriteLine($"Redis test-key = {value}");
+
+        await RemoveAsync(key);
+    }
+
+
+
+
 }
