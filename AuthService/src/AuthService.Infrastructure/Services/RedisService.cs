@@ -87,21 +87,4 @@ public class RedisService : IRedisService
         }
     }
 
-    // ---------------------- Test Redis ----------------------
-    public async Task TestRedisAsync()
-    {
-        var key = "test-key";
-        var valueToSet = "hello from AuthService";
-
-        await SetAsync(key, valueToSet, TimeSpan.FromMinutes(5));
-
-        var value = await GetAsync<string>(key);
-        Console.WriteLine($"Redis test-key = {value}");
-
-        await RemoveAsync(key);
-    }
-
-
-
-
 }

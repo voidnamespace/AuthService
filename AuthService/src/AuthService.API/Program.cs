@@ -1,13 +1,14 @@
-﻿using AuthService.Application.Interfaces;
+﻿using AuthService.Application.Common.Interfaces;
+using AuthService.Application.Interfaces;
 using AuthService.Domain.Interfaces;
 using AuthService.Infrastructure.Data;
+using AuthService.Infrastructure.Extensions;
 using AuthService.Infrastructure.Repositories;
 using AuthService.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using AuthService.Infrastructure.Extensions;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -123,9 +124,6 @@ using (var scope = app.Services.CreateScope())
         app.Logger.LogError(ex, "An error occurred while applying migrations");
     }
 
-    // 🔹 Test Redis (may delete after checking out)
-    var redisService = scope.ServiceProvider.GetRequiredService<RedisService>();
-    redisService.TestRedisAsync().GetAwaiter().GetResult();
 }
 
 // ------------------ Swagger ------------------
