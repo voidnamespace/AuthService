@@ -96,6 +96,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+app.UseMiddleware<AuthService.Infrastructure.Middleware.ExceptionMiddleware>();
 
 using (var scope = app.Services.CreateScope())
 {
