@@ -1,4 +1,4 @@
-using AuthService.Domain.Entities;
+﻿using AuthService.Domain.Entities;
 using AuthService.Domain.Enums;
 using AuthService.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
@@ -24,12 +24,15 @@ public class AuthDbContext : DbContext
             entity.HasKey(u => u.Id);
 
             entity.Property(u => u.Email)
-                  .HasConversion(
-                     email => email != null ? email._email : "",
-                     str => new EmailVO(str))
+                 .HasConversion(
+                    email => email.Value,
+                   str => new EmailVO(str))
                   .HasColumnName("Email")
                   .HasMaxLength(255)
                   .IsRequired();
+                  
+
+
 
             entity.HasIndex(u => u.Email)
                 .IsUnique();

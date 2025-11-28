@@ -1,4 +1,4 @@
-using AuthService.Domain.Entities;
+﻿using AuthService.Domain.Entities;
 using AuthService.Domain.Enums;
 using AuthService.Domain.Interfaces;
 using AuthService.Domain.ValueObjects;
@@ -38,9 +38,9 @@ public class AuthService : IAuthService
             throw new ArgumentException("The passwords don't match");
         }
 
-        var lowerEmail = request.Email.ToLower().Trim();
+        var trimmedEmail = request.Email.Trim();
 
-        bool exists = await _userRepository.ExistsByEmailAsync(lowerEmail);
+        bool exists = await _userRepository.ExistsByEmailAsync(trimmedEmail);
 
         if (exists)
         {
@@ -48,7 +48,7 @@ public class AuthService : IAuthService
             throw new InvalidOperationException("A user with this email already exists.");
         }
 
-        var emailVo = new EmailVO(request.Email);
+        var emailVo = new EmailVO(trimmedEmail);
         var passwordVo = new PasswordVO(request.Password);
 
         var user = new User(
@@ -64,10 +64,11 @@ public class AuthService : IAuthService
         return new RegisterResponse
         {
             UserId = user.Id,
-            Email = user.Email._email,
+            Email = user.Email.Value, 
             Message = "Registration was successful"
         };
     }
+
 
     public async Task<LoginResponse> LoginAsync(LoginRequest request)
     {
@@ -124,7 +125,7 @@ public class AuthService : IAuthService
             RefreshToken = refreshTokenValue,
             ExpiresAt = DateTime.UtcNow.AddHours(1),
             UserId = user.Id,
-            Email = user.Email._email,
+            Email = user.Email.Value,
             Role = user.Role.ToString(),
         };
     }

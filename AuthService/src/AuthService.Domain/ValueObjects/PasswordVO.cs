@@ -6,7 +6,7 @@ public class PasswordVO
     private string _hash = string.Empty;
     public string Hash => _hash;
 
-    private PasswordVO() { } // clear private contructor for entity to let  EF core work  and aswell for VO objects
+    private PasswordVO() { } 
 
     public static PasswordVO FromHash(string hash)
     {

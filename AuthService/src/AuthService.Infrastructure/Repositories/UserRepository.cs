@@ -1,4 +1,4 @@
-using AuthService.Domain.Entities;
+﻿using AuthService.Domain.Entities;
 using AuthService.Domain.Interfaces;
 using AuthService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -23,10 +23,12 @@ public class UserRepository : IUserRepository
 
     public async Task<User?> GetByEmailAsync(string email)
     {
-        var lowerEmail = email.ToLower();
-        return await _context.Users
+        var allUsers = await _context.Users
             .Include(u => u.RefreshTokens)
-            .FirstOrDefaultAsync(u => u.Email._email.ToLower() == lowerEmail);
+            .ToListAsync();
+
+        return allUsers.FirstOrDefault(u =>
+            u.Email.Value.ToLower() == email.ToLower());
     }
 
     public async Task<User> CreateAsync(User user)
@@ -55,8 +57,9 @@ public class UserRepository : IUserRepository
 
     public async Task<bool> ExistsByEmailAsync(string email)
     {
-        var lowerEmail = email.ToLower();
-        return await _context.Users.AnyAsync(u => u.Email._email.ToLower() == lowerEmail);
+        var allUsers = await _context.Users.ToListAsync();
+        return allUsers.Any(u =>
+            u.Email.Value.Equals(email, StringComparison.OrdinalIgnoreCase));
     }
 
     public async Task<IEnumerable<User>> GetAllAsync()

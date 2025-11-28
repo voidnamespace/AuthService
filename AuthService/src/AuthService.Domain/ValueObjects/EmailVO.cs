@@ -3,8 +3,8 @@
 public class EmailVO
 {
     public string _email { get; private set; } = string.Empty; 
-    private EmailVO() { } // clear private contructor for entity to let  EF core work and aswell for VO objects
-
+    private EmailVO() { } 
+    public string Value => _email;
     public EmailVO(string email)
     {
         if (string.IsNullOrEmpty(email))
