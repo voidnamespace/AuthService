@@ -1,4 +1,5 @@
-﻿using AuthService.Application.Common.Interfaces;
+﻿using AuthService.API.Extensions;
+using AuthService.Application.Common.Interfaces;
 using AuthService.Application.Interfaces;
 using AuthService.Domain.Interfaces;
 using AuthService.Infrastructure.Data;
@@ -30,7 +31,7 @@ builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 // ------------------ Сервисы ------------------
 builder.Services.AddScoped<IAuthService, AuthService.Infrastructure.Services.AuthService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
-
+builder.Services.AddHealthChecksConfiguration(builder.Configuration);
 // ------------------ JWT ------------------
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var secretKey = jwtSettings["SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey not found");
@@ -144,7 +145,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
+app.MapHealthCheckEndpoints();
 app.Logger.LogInformation("AuthService started successfully");
 
 app.Run();
