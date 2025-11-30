@@ -145,4 +145,14 @@ public class AuthController : ControllerBase
             message = "You have been successfully authenticated."
         });
     }
+
+    [HttpDelete("{userId}")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete(Guid userId)
+    {
+        await _authService.DeleteAsync(userId);
+        return NoContent();
+    }
 }

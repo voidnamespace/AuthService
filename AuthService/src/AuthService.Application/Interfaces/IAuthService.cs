@@ -9,4 +9,6 @@ public interface IAuthService
     Task<LoginResponse> LoginAsync(LoginRequest request);
     Task<RefreshTokenResponse> RefreshTokenAsync(RefreshTokenRequest request);
     Task LogoutAsync(Guid userId);
+
+    Task DeleteAsync(Guid userId);
 }

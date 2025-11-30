@@ -199,4 +199,18 @@ public class AuthService : IAuthService
 
         _logger.LogInformation("User {UserId} successfully logged out", userId);
     }
+    public async Task DeleteAsync(Guid userId)
+    {
+        _logger.LogInformation("Attempting to delete user {UserId}", userId);
+
+        var user = await _userRepository.GetByIdAsync(userId);
+        if (user == null)
+        {
+            throw new KeyNotFoundException($"User with ID {userId} not found");
+        }
+
+        await _userRepository.DeleteAsync(userId);
+
+        _logger.LogInformation("User {UserId} successfully deleted", userId);
+    }
 }
