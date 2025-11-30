@@ -1,4 +1,5 @@
-﻿using AuthService.API.Extensions;
+﻿using AspNetCoreRateLimit;
+using AuthService.API.Extensions;
 using AuthService.Application.Common.Interfaces;
 using AuthService.Application.Interfaces;
 using AuthService.Domain.Interfaces;
@@ -14,25 +15,23 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ------------------  Redis ------------------
 builder.Services.AddRedisService(
     builder.Configuration.GetConnectionString("Redis")
         ?? throw new InvalidOperationException("Redis connection string not found")
 );
 
-// ------------------ DbContext ------------------
 builder.Services.AddDbContext<AuthDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("AuthDb")));
 
-// ------------------ Repo ------------------
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
-// ------------------ Сервисы ------------------
 builder.Services.AddScoped<IAuthService, AuthService.Infrastructure.Services.AuthService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
+
 builder.Services.AddHealthChecksConfiguration(builder.Configuration);
-// ------------------ JWT ------------------
+builder.Services.AddRateLimitingConfiguration(builder.Configuration);
+
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var secretKey = jwtSettings["SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey not found");
 
@@ -58,7 +57,6 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
-// ------------------ Controllers и Swagger ------------------
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -95,7 +93,6 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// ------------------ CORS ------------------
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -108,10 +105,9 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// ------------------ Exception Middleware ------------------
 app.UseMiddleware<AuthService.Infrastructure.Middleware.ExceptionMiddleware>();
+app.UseIpRateLimiting();
 
-// ------------------ Apply migrations and test Redis ------------------
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
@@ -124,10 +120,8 @@ using (var scope = app.Services.CreateScope())
     {
         app.Logger.LogError(ex, "An error occurred while applying migrations");
     }
-
 }
 
-// ------------------ Swagger ------------------
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -140,12 +134,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
-
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 app.MapHealthCheckEndpoints();
+
 app.Logger.LogInformation("AuthService started successfully");
 
 app.Run();
