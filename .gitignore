@@ -124,3 +124,6 @@ secrets.json
 appsettings.*.json
 !appsettings.json
 !appsettings.Development.json
+
+# scratch
+scratch/

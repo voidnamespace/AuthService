@@ -15,11 +15,7 @@ public static class HealthCheckExtensions
                 connectionString: configuration.GetConnectionString("AuthDb")!,
                 name: "postgres",
                 failureStatus: HealthStatus.Unhealthy,
-                tags: new[] { "db", "sql", "postgres" })
-            .AddCheck(
-                name: "self",
-                check: () => HealthCheckResult.Healthy("API is running"),
-                tags: new[] { "api" });
+                tags: new[] { "db" });
 
         return services;
     }
@@ -40,7 +36,7 @@ public static class HealthCheckExtensions
 
         endpoints.MapHealthChecks("/health/live", new HealthCheckOptions
         {
-            Predicate = check => check.Tags.Contains("api"),
+            Predicate = _ => false, 
             ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
         });
 
