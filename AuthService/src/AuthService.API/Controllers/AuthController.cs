@@ -78,6 +78,15 @@ public class AuthController : ControllerBase
             message = "You have been successfully authenticated."
         });
     }
+    [HttpGet("users")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> GetAll()
+    {
+        var users = await _authService.GetAllUsersAsync();
+        return Ok(users);
+    }
 
     [HttpDelete("{userId}")]
     [Authorize(Roles = "Admin")]
