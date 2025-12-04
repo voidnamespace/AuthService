@@ -11,12 +11,10 @@ namespace AuthService.API.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
-    private readonly ILogger<AuthController> _logger;
 
-    public AuthController(IAuthService authService, ILogger<AuthController> logger)
+    public AuthController(IAuthService authService)
     {
         _authService = authService;
-        _logger = logger;
     }
 
     [HttpPost("register")]
@@ -24,28 +22,9 @@ public class AuthController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
-        try
-        {
-            var response = await _authService.RegisterAsync(request);
-            return Ok(response);
-        }
-        catch (ArgumentException ex)
-        {
-            _logger.LogWarning(ex, "Validation error during registration");
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (InvalidOperationException ex)
-        {
-            _logger.LogWarning(ex, "Business logic error during registration");
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Unexpected error during registration");
-            return StatusCode(500, new { message = "Internal Server Error" });
-        }
+        var response = await _authService.RegisterAsync(request);
+        return Ok(response);
     }
-
 
     [HttpPost("login")]
     [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
@@ -53,26 +32,8 @@ public class AuthController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        try
-        {
-            var response = await _authService.LoginAsync(request);
-            return Ok(response);
-        }
-        catch (ArgumentException ex)
-        {
-            _logger.LogWarning(ex, "Validation error during login");
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            _logger.LogWarning(ex, "Unauthorized access during login");
-            return Unauthorized(new { message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Unexpected error during login");
-            return StatusCode(500, new { message = "Internal Server Error" });
-        }
+        var response = await _authService.LoginAsync(request);
+        return Ok(response);
     }
 
     [HttpPost("refresh")]
@@ -81,26 +42,8 @@ public class AuthController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
     {
-        try
-        {
-            var response = await _authService.RefreshTokenAsync(request);
-            return Ok(response);
-        }
-        catch (ArgumentException ex)
-        {
-            _logger.LogWarning(ex, "Validation error during token refresh");
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            _logger.LogWarning(ex, "Unauthorized access during token refresh");
-            return Unauthorized(new { message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Unexpected error during token refresh");
-            return StatusCode(500, new { message = "Internal Server Error" });
-        }
+        var response = await _authService.RefreshTokenAsync(request);
+        return Ok(response);
     }
 
     [HttpPost("logout")]
@@ -109,22 +52,12 @@ public class AuthController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Logout()
     {
-        try
-        {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
-            {
-                return Unauthorized(new { message = "Invalid token" });
-            }
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+            return Unauthorized(new { message = "Invalid token" });
 
-            await _authService.LogoutAsync(userId);
-            return Ok(new { message = "Logout successful" });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Unexpected error during logout");
-            return StatusCode(500, new { message = "Internal Server Error" });
-        }
+        await _authService.LogoutAsync(userId);
+        return Ok(new { message = "Logout successful" });
     }
 
     [HttpGet("me")]
@@ -144,6 +77,15 @@ public class AuthController : ControllerBase
             role,
             message = "You have been successfully authenticated."
         });
+    }
+    [HttpGet("users")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> GetAll()
+    {
+        var users = await _authService.GetAllUsersAsync();
+        return Ok(users);
     }
 
     [HttpDelete("{userId}")]

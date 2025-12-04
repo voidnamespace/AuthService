@@ -6,6 +6,7 @@ using BCrypt.Net;
 using Microsoft.Extensions.Logging;
 using AuthService.Application.Interfaces;
 using AuthService.Application.DTOs;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
 namespace AuthService.Infrastructure.Services;
 
@@ -129,6 +130,27 @@ public class AuthService : IAuthService
             Role = user.Role.ToString(),
         };
     }
+
+    public async Task<IEnumerable<UserDTO>> GetAllUsersAsync()
+    {
+        _logger.LogInformation("Attempting to get list of all users");
+        var users = await _userRepository.GetAllAsync();
+
+        _logger.LogInformation("List of all users successfully loaded");
+
+        return users.Select(user => new UserDTO
+        {
+            UserId = user.Id,
+            Email = user.Email.Value,
+            Role = user.Role.ToString(),
+            IsActive = user.IsActive,
+            CreatedAt = user.CreatedAt,
+            UpdatedAt = user.UpdatedAt
+        });
+        
+    }
+
+
 
 
 
