@@ -1,10 +1,9 @@
 ﻿using AuthService.Domain.Entities;
 using AuthService.Domain.Enums;
-using AuthService.Domain.Interfaces;
+using AuthService.Application.Interfaces;
 using AuthService.Domain.ValueObjects;
 using BCrypt.Net;
 using Microsoft.Extensions.Logging;
-using AuthService.Application.Interfaces;
 using AuthService.Application.DTOs;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 

@@ -1,4 +1,4 @@
-﻿namespace AuthService.Application.Common.Interfaces;
+﻿namespace AuthService.Application.Interfaces;
 public interface IRedisService
 {
     Task SetAsync<T>(string key, T value, TimeSpan? expiry = null);

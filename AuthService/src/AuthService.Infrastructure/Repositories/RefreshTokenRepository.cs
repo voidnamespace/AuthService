@@ -1,5 +1,5 @@
 using AuthService.Domain.Entities;
-using AuthService.Domain.Interfaces;
+using AuthService.Application.Interfaces;
 using AuthService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
