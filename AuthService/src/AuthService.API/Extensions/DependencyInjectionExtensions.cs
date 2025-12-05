@@ -1,8 +1,6 @@
 using AuthService.Application.Interfaces;
-using AuthService.Domain.Interfaces;
 using AuthService.Infrastructure.Repositories;
 using AuthService.Infrastructure.Services;
-
 namespace AuthService.API.Extensions;
 
 public static class DependencyInjectionExtensions
