@@ -7,7 +7,7 @@ using System.Security.Cryptography;
 using Microsoft.Extensions.Configuration;
 using System.Text;
 
-namespace AuthService.Infrastructure.Services;
+namespace AuthService.Application.Services;
 
 public class JwtService : IJwtService
 {

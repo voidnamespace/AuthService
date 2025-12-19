@@ -1,9 +1,9 @@
 ﻿using StackExchange.Redis;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using AuthService.Application.Common.Interfaces;
+using AuthService.Application.Interfaces;
 
-namespace AuthService.Infrastructure.Services;
+namespace AuthService.Application.Services;
 
 public class RedisService : IRedisService
 {

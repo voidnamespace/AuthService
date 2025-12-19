@@ -2,12 +2,10 @@
 using AuthService.Domain.Enums;
 using AuthService.Application.Interfaces;
 using AuthService.Domain.ValueObjects;
-using BCrypt.Net;
 using Microsoft.Extensions.Logging;
 using AuthService.Application.DTOs;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
-namespace AuthService.Infrastructure.Services;
+namespace AuthService.Application.Services;
 
 public class AuthService : IAuthService
 {
