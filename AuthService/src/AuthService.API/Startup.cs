@@ -1,6 +1,6 @@
 using AspNetCoreRateLimit;
 using AuthService.API.Extensions;
-using AuthService.Infrastructure.Extensions;
+using AuthService.Application.Extensions;
 
 namespace AuthService.API;
 

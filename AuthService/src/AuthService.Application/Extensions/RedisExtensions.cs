@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
-using AuthService.Application.Common.Interfaces;
-using AuthService.Infrastructure.Services;
+using AuthService.Application.Interfaces;
+using AuthService.Application.Services;
 
-namespace AuthService.Infrastructure.Extensions;
+namespace AuthService.Application.Extensions;
 
 public static class RedisExtensions
 {

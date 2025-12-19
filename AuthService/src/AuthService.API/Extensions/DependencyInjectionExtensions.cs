@@ -1,6 +1,6 @@
 using AuthService.Application.Interfaces;
 using AuthService.Infrastructure.Repositories;
-using AuthService.Infrastructure.Services;
+using AuthService.Application.Services;
 namespace AuthService.API.Extensions;
 
 public static class DependencyInjectionExtensions
@@ -10,7 +10,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
-        services.AddScoped<IAuthService, AuthService.Infrastructure.Services.AuthService>();
+        services.AddScoped<IAuthService, AuthService.Application.Services.AuthService>();
         services.AddScoped<IJwtService, JwtService>();
 
         return services;
